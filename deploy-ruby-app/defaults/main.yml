@@ -1,0 +1,17 @@
+---
+# defaults file for deploy-ruby-app
+ruby_app_path: /app
+# По какой-то причине не из-под рута при запуске bundler не видит установленные зависимости, в будущем роль можно доработать под иных пользователей
+ruby_app_user: root
+ruby_app_secret_key_base: string
+ruby_app_rails_env: production
+ruby_app_rails_log_to_stdout: 1
+ruby_app_db_host: 127.0.0.1
+ruby_app_db_port: 5432
+ruby_app_db_name: app
+ruby_app_db_user: app_user
+ruby_app_db_password: password
+ruby_app_unix_socket: /var/run/puma.sock
+ruby_bin_path: /opt/rh/rh-ruby26/root/usr/local/bin:/opt/rh/rh-ruby26/root/usr/bin
+ruby_lib_path: /opt/rh/rh-ruby26/root/usr/local/lib64:/opt/rh/rh-ruby26/root/usr/lib64
+ruby_pkg_config_path: /opt/rh/rh-ruby26/root/usr/local/lib64/pkgconfig:/opt/rh/rh-ruby26/root/usr/lib64/pkgconfig

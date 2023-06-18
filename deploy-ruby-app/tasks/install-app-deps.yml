@@ -1,0 +1,94 @@
+---
+# Подключаем всем пользователям переменные окружения для работы с ruby 2.6. 
+# Хоть в среде ansible они все равно недоступны, но это поможет удобнее работать с сервером при прямом логине
+- name: Enable ruby2.6 environment for all users
+  ansible.builtin.copy:
+    src: files/enable_ruby26.sh
+    dest: /etc/profile.d/enable_ruby26.sh
+    owner: root
+    group: root
+    mode: 0644
+    
+- name: Copy App Folder
+  ansible.builtin.copy:
+    src: files/xpaste_practicum/
+    dest: "{{ ruby_app_path }}"
+    owner: "{{ ruby_app_user}}"
+    group: "{{ ruby_app_user}}"
+    mode: 0644
+
+# Используем специальный модуль для установки gem
+- name: Install bundler
+  community.general.gem:
+    name: bundler
+    version: 1.16.2
+    state: present
+    user_install: no
+  become: true
+  become_user: root
+  # Ansible использует non-login shell, поэтому переменные окружения из /etc/profile.d не подхватываются и мы подключаем их вручную для нужных тасок
+  environment:
+    PATH: "{{ ruby_bin_path }}:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ ruby_lib_path }}"
+
+ 
+- name: Create Folder for bundler config
+  ansible.builtin.file:
+    path: ~/.bundle
+    state: directory
+    mode: 0755
+    owner: "{{ ruby_app_user}}"
+    group: "{{ ruby_app_user}}"
+  become: true
+  become_user: "{{ ruby_app_user}}"
+
+# Эта задача воспроизводит выполнение команды bundle config build.nokogiri --use-system-libraries
+- name: Copy bundle config file
+  ansible.builtin.copy:
+    src: files/bundle_config
+    dest: ~/.bundle/config
+    owner: "{{ ruby_app_user}}"
+    group: "{{ ruby_app_user}}"
+    mode: 0644
+  become: true
+  become_user: "{{ ruby_app_user}}"
+
+# К сожалению nokogiri не ставится через bundler, даже если делать вручную через shell. Предварительная команда bundle config build.nokogiri --use-system-libraries не помогает
+# Хотелось бы обсудить это на разборе
+- name: Install nokogiri
+  community.general.gem:
+    name: nokogiri  
+    version: 1.8.2
+    state: present
+    user_install: no
+  become: true
+  become_user: root
+  environment:
+    PATH: "{{ ruby_bin_path }}:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ ruby_lib_path }}"
+
+
+# Используем специальный модуль для bundler'а
+# С помощью ключей clean, exclude groups, extra_args мы полностью воспроизводим команду bundle install --clean --no-cache --without development
+- name: Install dependencies via bundler
+  community.general.bundler:
+    state: present
+    clean: true
+    exclude_groups: development
+    chdir: "{{ ruby_app_path }}"
+    extra_args: "--no-cache"
+  become: true
+  become_user: root
+  environment:
+    PATH: "{{ ruby_bin_path }}:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ ruby_lib_path }}"
+    PKG_CONFIG_PATH: "{{ ruby_pkg_config_path }}"
+  register: result
+  failed_when: "'Bundle complete!' not in result.stdout"  
+    
+
+
+
+
+
+ 

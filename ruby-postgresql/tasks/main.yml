@@ -1,0 +1,6 @@
+---
+# tasks file for ruby-postgresql
+- include_tasks: install.yml
+- include_tasks: create_db_user.yml
+- include_tasks: create_db.yml
+- include_tasks: edit_pg_hba.yml

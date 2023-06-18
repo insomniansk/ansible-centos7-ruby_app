@@ -1,0 +1,9 @@
+roles:
+- src: nginxinc.nginx
+
+collections:
+- name: community.postgresql
+- name: ansible.posix
+  version: 1.4.0
+- name: community.general
+  version: 6.2.0

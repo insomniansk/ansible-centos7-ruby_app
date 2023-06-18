@@ -1,0 +1,3 @@
+---
+BUNDLE_BUILD__NOKOGIRI: "--use-system-libraries"
+BUNDLE_PATH: "/opt/rh/rh-ruby26/root/usr/local/share/gems/"

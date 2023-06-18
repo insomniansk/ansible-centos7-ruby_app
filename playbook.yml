@@ -1,0 +1,29 @@
+---
+- name: deploy app 
+  hosts: ruby
+  become: yes
+
+
+  # Сначала запускаем роли в правильном порядке (приложение не запустится без базы, а nginx не запустится без сокета приложения)
+  roles:
+    - ruby-postgresql
+    - deploy-ruby-app
+    - nginxinc.nginx
+  
+  # Заливаем конфигурацию nginx  
+  tasks:
+    - name: Change nginx config
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: 0644
+      register: nginx_conf
+    
+    # Перезагружаем конфигурацию nginx в случае, если конфигурационный файл изменился прошлой задачей
+    - name: Reload nginx service
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+      when: nginx_conf.changed

@@ -1,0 +1,28 @@
+---
+- name: Install postgresql packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-server
+    - postgresql-contrib
+    - postgresql-libs
+    - python-psycopg2
+
+- name: Check Init of postgresql database
+  stat:
+    path: "/var/lib/pgsql/data/PG_VERSION"
+  register: pgdata_dir_version
+  
+- name: Ensure PostgreSQL database cluster is initialized.
+  command: postgresql-setup initdb
+  when: not pgdata_dir_version.stat.exists
+  become: true
+  become_user: "{{ ruby_postresql_root_user }}"
+
+- name: Start and Enable Postgresql Service
+  service:
+    name: postgresql
+    state: started
+    enabled: true

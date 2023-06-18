@@ -1,0 +1,25 @@
+[Unit]
+Description=Slurm Ruby Application
+After=network.target
+
+[Service]
+Type=simple
+# По какой-то причине не из-под рута при запуске bundler не видит установленные зависимости, в будущем роль можно доработать под иных пользователей
+# Хотелось бы обсудить это на разборе
+User={{ ruby_app_user }}
+WorkingDirectory={{ ruby_app_path }}
+Environment="SECRET_KEY_BASE={{ ruby_app_secret_key_base }}"
+Environment="RAILS_ENV={{ ruby_app_rails_env }}"
+Environment="RAILS_LOG_TO_STDOUT={{ ruby_app_rails_log_to_stdout }}"
+Environment="DB_HOST={{ ruby_app_db_host }}"
+Environment="DB_PORT={{ ruby_app_db_port }}"
+Environment="DB_NAME={{ ruby_app_db_name }}"
+Environment="DB_USER={{ ruby_app_db_user }}"
+Environment="DB_PASSWORD={{ ruby_app_db_password }}"
+# Systemd не подхватывает переменные окружения из /etc/profile.d/, поэтому подключаем их командой scl_source enable rh-ruby26ы
+ExecStart=/bin/bash -a -c 'source scl_source enable rh-ruby26 && bundle exec rake db:migrate && \
+bundle exec puma -b unix://{{ ruby_app_unix_socket }} -e $RAILS_ENV config.ru'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

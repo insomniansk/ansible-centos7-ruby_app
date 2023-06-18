@@ -1,0 +1,15 @@
+---
+- name: Access for postgresql_user to postgresql db via 127.0.0.1
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/data/pg_hba.conf
+    regex: '^host'
+    firstmatch: yes
+    line:  host    {{ ruby_postresql_db }}             {{ ruby_postresql_user }}             127.0.0.1/32            trust
+    state: present
+  register: pg_hba
+
+- name: Reload Postgresql after pg_hba changes
+  ansible.builtin.systemd:
+    name: postgresql
+    state: restarted
+  when: pg_hba.changed

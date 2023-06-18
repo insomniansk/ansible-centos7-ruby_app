@@ -1,0 +1,8 @@
+---
+# defaults file for ruby-postgresql
+ruby_postresql_db: app
+ruby_postresql_host: 127.0.0.1
+ruby_postresql_user: app_user
+ruby_postresql_port: 5432
+ruby_postresql_password: password
+ruby_postresql_root_user: postgres

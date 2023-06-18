@@ -1,0 +1,4 @@
+---
+# defaults file for deploy-ruby-app
+ruby_app_path: /app
+ruby_app_unix_socket: /var/run/puma.sock

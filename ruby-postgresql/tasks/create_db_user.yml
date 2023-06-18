@@ -1,0 +1,7 @@
+---
+- name: Create db_user
+  community.postgresql.postgresql_user:
+    name: "{{ ruby_postresql_user }}"
+    password: "{{ ruby_postresql_password }}"
+  become: true
+  become_user: "{{ ruby_postresql_root_user }}"

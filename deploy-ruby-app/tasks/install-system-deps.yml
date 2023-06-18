@@ -1,0 +1,31 @@
+---
+- name: Install repos and basic libs
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - epel-release
+    - postgresql-devel
+    - libxml2-devel
+    - centos-release-scl-rh
+    - centos-release-scl
+    - nodejs
+    
+- name: Install Development Tools group
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: Install ruby 2.6
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    enablerepo: centos-sclo-rh
+  with_items:
+    - rh-ruby26
+    - rh-ruby26-ruby-devel
+    - rh-ruby26-rubygems-devel
+    - rh-ruby26-build
+  

@@ -1,0 +1,6 @@
+---
+# tasks file for deploy-ruby-app
+- include_tasks: install-system-deps.yml
+- include_tasks: install-app-deps.yml
+- include_tasks: install-systemd.yml
+
