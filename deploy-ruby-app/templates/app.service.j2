@@ -16,8 +16,9 @@ Environment="DB_PORT={{ ruby_app_db_port }}"
 Environment="DB_NAME={{ ruby_app_db_name }}"
 Environment="DB_USER={{ ruby_app_db_user }}"
 Environment="DB_PASSWORD={{ ruby_app_db_password }}"
-# Systemd не подхватывает переменные окружения из /etc/profile.d/, поэтому подключаем их командой scl_source enable rh-ruby26ы
+#Systemd не подхватывает переменные окружения из /etc/profile.d/, поэтому подключаем их командой scl_source enable rh-ruby26
 ExecStart=/bin/bash -a -c 'source scl_source enable rh-ruby26 && bundle exec rake db:migrate && \
+bundle exec rake assets:precompile  && \
 bundle exec puma -b unix://{{ ruby_app_unix_socket }} -e $RAILS_ENV config.ru'
 Restart=always
 

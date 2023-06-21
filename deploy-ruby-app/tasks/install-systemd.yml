@@ -7,12 +7,14 @@
     group: root
     mode: 0664
   register: updatesystemd
+  notify: restart_service
     
 
 - name: systemd reload
   ansible.builtin.systemd:
     daemon_reload: true
   when: updatesystemd.changed
+  
 
 - name: Enable and start app service
   ansible.builtin.systemd:

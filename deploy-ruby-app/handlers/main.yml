@@ -1,2 +1,6 @@
 ---
 # handlers file for deploy-ruby-app
+- name: restart_service
+  ansible.builtin.systemd:
+    name: app.service
+    state: restarted
